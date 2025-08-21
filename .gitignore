@@ -3,3 +3,7 @@ Include
 lib
 Scripts
 .env
+*.json
+*.ipynb
+clientDataSample
+share
