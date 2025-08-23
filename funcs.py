@@ -48,14 +48,23 @@ def getCurrentMatch(puuid):
 #print (getMatchData(getCurrentMatch(TS)))
 i=0
 def puuidToName(puuid):
-    url = f"https://americas.api.riotgames.com/riot/account/v1/accounts/by-puuid/{puuid}"
+    url = f"{AURL}/riot/account/v1/accounts/by-puuid/{puuid}"
 
     headers = {
         "X-Riot-Token": APIKEY
     }
     response = requests.get(url, headers=headers)
 
-    return response.json().get("gameName", "Unknown")
+    return response.json().get("gameName", "Unknown"), response.json().get("tagLine", "")
+def nameToPuuid(gameName, tagLine):
+    url = f"{AURL}/riot/account/v1/accounts/by-riot-id/{gameName}/{tagLine}"
+
+    headers = {
+        "X-Riot-Token": APIKEY
+    }
+    response = requests.get(url, headers=headers)
+
+    return response.json()
 def getClientData():
     while True:
         data = {}

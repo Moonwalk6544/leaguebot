@@ -5,6 +5,7 @@ import json
 import time
 import matplotlib.pyplot as plt
 import funcs as ff
+import pandas as pd
 import MLE 
 load_dotenv()
 APIKEY=os.getenv("APIKEY")
@@ -12,11 +13,20 @@ TS=os.getenv("TESTSUMMONER")
 NURL="https://na1.api.riotgames.com"
 AURL="https://americas.api.riotgames.com"
 
-
-print('Now retrieving data for player: ', ff.puuidToName(TS))
-
-
-
+#riotID=ff.puuidToName(TS)
+inns={}
+inns=input("Enter riot ID and tagline, or riot PUUID: ")
+inns=inns.replace(' ','')
+innSplit=inns.split("#")
+if len(innSplit) == 2:
+    N2=ff.nameToPuuid(innSplit[0], innSplit[1])
+    print(f"Now retrieving data for Player: {N2.get("gameName")}#{N2.get("tagLine")}")
+else:
+    N1=ff.puuidToName(innSplit)
+    if N1[1] != "":
+        print(f"Now retrieving data for Player: {N1[0]}#{N1[1]}")
+    else:
+        print('Incorrect Formatting. Please enter a valid PUUID or Riot Id.')
 '''for index in range(2, count):
     jsonArray=[{} for _ in range(0,30)]
     #todo: change temp index range
