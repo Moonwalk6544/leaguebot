@@ -1,1 +1,3 @@
 we want to correlate events. The bots main goal will be to aggregate data, and help the user find the best possible builds
+main loop:
+the program gathers games. it then stores as many games as it can in a game data folder for the player. it stores the timeline of each game, processes it, adds it to a tensorflow array, correlates certain statistics to winning, and advises the player on the things that win them the most games
