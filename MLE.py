@@ -7,7 +7,7 @@ import seaborn as sns
 import pandas as pd
 import matplotlib.pyplot as plt
 valuableFields=['kills', 'deaths', 'assists', 'totalDamageDealtToChampions', 'goldEarned', 'totalMinionsKilled', 'visionScore','totalDamageDealt',
-                'totalHeal', 'sightWardsBoughtInGame', 'objectivesStolen', 'objectivesStolenAssists', 'timeEnemySpentControlled', 'totalTimeCrowdControlDealt',]
+                'totalHeal', 'controlWardsPlaced', 'objectivesStolen', 'objectivesStolenAssists', 'totalTimeCCDealt', 'totalTimeSpentDead',]
 def analyze_match_data(match_data):
     # Extract relevant information from the match data
     participants = match_data.get("info", {}).get("participants", [])
@@ -28,30 +28,37 @@ def extractInfo(participant):
 
     return valuableInfo
 Info={}
+PDData={}
 for participant in matchD:
     print(participant['championName'])
-    Info[participant['championName']] = extractInfo(participant)
+    Info[participant['championName']]=extractInfo(participant)
+    PDData = pd.DataFrame.from_dict(Info, orient='index')
 
-PDData = pd.DataFrame.from_dict(Info)
 #for participant in PDData['championName'].unique():
-fg, axs = plt.subplots(ncols=10, nrows=14, figsize=(30, 30))
+
 print(PDData.describe())
-index = 0
-axs=axs.flatten()
+#print(Info)
 
-for k, v in PDData["Volibear"].items():
-    print(f"K: {k}, V: {v}")
-    if isinstance(v, int):
-        print('reached')
-        sns.boxplot(y=k,data=PDData, ax=axs[index])
+def boxPlot():
+    index = 0
+    fg, axs = plt.subplots(ncols=5, nrows=4, figsize=(10, 20))
+    axs=axs.flatten()
+    for k, v in PDData.items():
+        print(f"K: {k}, V: {v}")
+
+        #sns.boxplot(y=k,data=PDData, ax=axs[index])
+        #sns.histplot(v, kde=True, ax=axs[index],stat='density')
+        
         #axs[index].boxplot(v)
-        axs[index].set_title(k)
-    index += 1
-    if index >= axs.size:
-        break
-plt.tight_layout()
-plt.show()
-
+        #axs[index].set_title(k)
+        index += 1
+        if index >= axs.size:
+            break
+    plt.figure(figsize=(30, 20))
+    sns.heatmap(PDData.corr().abs(), annot=True)
+    plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=5.0)
+    plt.show()
+boxPlot()
     #fig, axs=plt.subplots()
     # You can add more advanced analysis and visualization here
 #going to make this its own thing so from here this will only run if testing the MLE engine.
