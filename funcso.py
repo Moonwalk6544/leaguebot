@@ -4,46 +4,49 @@ from dotenv import load_dotenv
 import json
 import time
 import matplotlib.pyplot as plt
-import MLE 
 load_dotenv()
 APIKEY=os.getenv("APIKEY")
 TS=os.getenv("TESTSUMMONER")
 
 NURL="https://na1.api.riotgames.com"
 AURL="https://americas.api.riotgames.com"
+byPuuid="lol/summoner/v4/summoners/by-puuid/"
 
 
 matchData={}
-def get_summoner_data(puuid):
-    url = f"{NURL}/lol/summoner/v4/summoners/by-puuid/{puuid}"
+def getData(endpoint, arg1="", extraArgs="", base=NURL):
+    #get data accepts a base as argument but also has backup implementation just in case.
+    url = f"{base}/{endpoint}/{arg1}/{extraArgs}"
+    if base==NURL:
+        AltUrl = f"{AURL}/{endpoint}/{arg1}/{extraArgs}"
+    else:
+        AltUrl = f"{NURL}/{endpoint}/{arg1}/{extraArgs}"
     print(url)
     headers = {
         "X-Riot-Token": APIKEY
-    }
-    response = requests.get(url, headers=headers)
-    return response.json()
-def getMatches(puuid):
-    url = f"{AURL}/lol/match/v5/matches/by-puuid/{puuid}/ids?start=0&count=10"
-    headers = {
-        "X-Riot-Token": APIKEY
-    }
-    response = requests.get(url, headers=headers)
-    return response.json()
-def getMatchData(match_id):
-    url = f"{AURL}/lol/match/v5/matches/{match_id}"
-    headers = {
-        "X-Riot-Token": APIKEY
-    }
-    response = requests.get(url, headers=headers)
-    return response.json()
 
-def getCurrentMatch(puuid):
-    url = f"{NURL}/lol/spectator/v5/active-games/by-summoner/{puuid}"
-    headers = {
-        "X-Riot-Token": APIKEY
     }
-    response = requests.get(url, headers=headers)
-    return response.json()
+    print(APIKEY)
+    #okay this function is awful. I know. im sorry. i couldnt figure out the try except thing so we're doing it 
+    #old fashioned way haha
+    r=requests.get(url, headers=headers)
+    r1=requests.get(AltUrl, headers=headers)
+    if r.status_code >300: #bad request 1
+        if r1.status_code >300: #bad request 2
+            print(f"Malformed request R: {r} R1: {r1}")
+            return
+        else:
+            print(f"Request redirected to alternate server. R: {r} R1: {r1}")
+            return r1.json()
+    else:
+        return r.json()
+
+def getMatches(puuid):
+    return getData("lol/match/v5/matches/by-puuid", puuid, "ids?start=0&count=10")
+def getMatchData(match_id):
+    return getData("lol/match/v5/matches", match_id)
+def getCurrentMatch(puuid):
+    return getData("lol/spectator/v5/active-games/by-summoner", puuid)
 #print(get_summoner_data(TS))
 #print (getMatchData(getCurrentMatch(TS)))
 i=0
@@ -57,14 +60,13 @@ def puuidToName(puuid):
 
     return response.json().get("gameName", "Unknown"), response.json().get("tagLine", "")
 def nameToPuuid(gameName, tagLine):
-    url = f"{AURL}/riot/account/v1/accounts/by-riot-id/{gameName}/{tagLine}"
+    print(f"gamename: {gameName}, tagline: {tagLine}")
+    data1=getData("riot/account/v1/accounts/by-riot-id", gameName, tagLine, AURL)
+    if (data1 is not None):
+        return data1
+    else: 
+        print("Please enter the riot ID or PUUID in the correct format. (GameName#Tagline)")
 
-    headers = {
-        "X-Riot-Token": APIKEY
-    }
-    response = requests.get(url, headers=headers)
-
-    return response.json()
 def getClientData():
     while True:
         data = {}
@@ -99,9 +101,4 @@ def displayCorrelations():
     plt.show()
     return
 def getMatchTimeline(match_id):
-    url = f"{AURL}/lol/match/v5/matches/{match_id}/timeline"
-    headers = {
-        "X-Riot-Token": APIKEY
-    }
-    response = requests.get(url, headers=headers)
-    return response.json()
+    return getData("lol/match/v5/matches", match_id, "/timeline")
