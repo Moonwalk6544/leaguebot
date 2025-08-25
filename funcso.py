@@ -21,12 +21,11 @@ def getData(endpoint, arg1="", extraArgs="", base=NURL):
         AltUrl = f"{AURL}/{endpoint}/{arg1}/{extraArgs}"
     else:
         AltUrl = f"{NURL}/{endpoint}/{arg1}/{extraArgs}"
-    print(url)
     headers = {
         "X-Riot-Token": APIKEY
 
     }
-    print(APIKEY)
+    #print(APIKEY)
     #okay this function is awful. I know. im sorry. i couldnt figure out the try except thing so we're doing it 
     #old fashioned way haha
     r=requests.get(url, headers=headers)
@@ -37,14 +36,15 @@ def getData(endpoint, arg1="", extraArgs="", base=NURL):
             return
         else:
             print(f"Request redirected to alternate server. R: {r} R1: {r1}")
+            print(url)
             return r1.json()
     else:
         return r.json()
 
-def getMatches(puuid):
-    return getData("lol/match/v5/matches/by-puuid", puuid, "ids?start=0&count=10")
+def getMatches(puuid,number):
+    return getData("lol/match/v5/matches/by-puuid", puuid, f"ids?start=0&count={number}", base=AURL)
 def getMatchData(match_id):
-    return getData("lol/match/v5/matches", match_id)
+    return getData("lol/match/v5/matches", match_id, base=AURL)
 def getCurrentMatch(puuid):
     return getData("lol/spectator/v5/active-games/by-summoner", puuid)
 #print(get_summoner_data(TS))
