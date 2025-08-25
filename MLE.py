@@ -80,9 +80,26 @@ def heatMap(participantData):
     sns.heatmap(corr, annot=True)
     plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=5.0)
     plt.show()
+def analyzePlayer(N2,matches):
+    selfData=pd.DataFrame()
+    index=0
+    for match in ff.getMatches(N2.get("puuid"), matches):
+        PDData=getParticipantData(ff.getMatchData(match))#, N2.get("puuid"))
+        for participant in PDData.index:
+            if PDData.at[participant, 'puuid'] == N2.get("puuid"):
+                selfData[index]=PDData.loc[participant]
+            else:
+                allyTeamID = PDData.at[participant, 'teamId']
+                allyTeam=PDData[PDData['teamId'] == allyTeamID]
+                enemyTeam=PDData[PDData['teamId'] != allyTeamID]
+        index+=1
+    return selfData
+            #print(selfData)
+    #Datum[index]=pd.DataFrame.from_dict(PDData, orient='index')
+    
 def heatMapDiff(participantData, participantData2):
     plt.figure(figsize=(30, 20))
-    for datum in participantData2:
+    #for datum in participantData2:
         #work in progress
     corr = participantData.corr().abs()
     corr2= participantData2.corr().abs()

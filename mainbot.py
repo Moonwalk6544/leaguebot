@@ -33,33 +33,18 @@ else:
         print('Incorrect Formatting. Please enter a valid PUUID or Riot Id.')
 allyTeam={}
 enemyTeam={}
-selfData=pd.DataFrame()
 index=0
 Datum={}
-for match in ff.getMatches(N2.get("puuid"), 5):
-    PDData=MLE.getParticipantData(ff.getMatchData(match))#, N2.get("puuid"))
-    for participant in PDData.index:
-        if PDData.at[participant, 'puuid'] == N2.get("puuid"):
-            selfData[index]=PDData.loc[participant]
-        else:
-            allyTeamID = PDData.at[participant, 'teamId']
-            allyTeam=PDData[PDData['teamId'] == allyTeamID]
-            enemyTeam=PDData[PDData['teamId'] != allyTeamID]
-        #print(selfData)
-    Datum[index]=pd.DataFrame.from_dict(PDData, orient='index')
-    index+=1
+
             #print(enemyTeam)
             #print(f"Player {N2.get('gameName')} in match {match}: Champion={participant}, Kills={PDData.at[participant, 'kills']}, Deaths={PDData.at[participant, 'deaths']}, Assists={PDData.at[participant, 'assists']}")
     #print(PDData)
 
 #remove puuid
-#Datum=pd.DataFrame.from_dict(Datum, orient='index')
-selfData=selfData.drop('puuid').drop('teamId')
-print(Datum)
-#Datum=Datum.drop('puuid').drop('teamId')
-print(selfData)
+#Datum=pd.DataFrame.from_dict(Datum, orient='index'
+selfData=MLE.analyzePlayer(N2,5).drop('puuid').drop('teamId')
+
 MLE.heatMap(selfData.transpose())
-#MLE.heatMap(allyTeam.transpose())
 #MLE.heatMapDiff(selfData.transpose(), Datum.transpose())
 '''for index in range(2, count):
     jsonArray=[{} for _ in range(0,30)]
