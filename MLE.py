@@ -83,7 +83,7 @@ def heatMap(participantData):
 def heatMapDiff(participantData, participantData2):
     plt.figure(figsize=(30, 20))
     for datum in participantData2:
-        
+        #work in progress
     corr = participantData.corr().abs()
     corr2= participantData2.corr().abs()
     diffy = corr - corr2
