@@ -18,15 +18,13 @@ inns={}
 #inns=input("Enter riot ID and tagline, or riot PUUID: ")
 #delete after debug
 inns=("homietickler#na1")
-inns=inns.replace(' ','')
-innSplit=inns.split("#")
 
-N2=None
-if len(innSplit) == 2:
-    N2=ff.nameToPuuid(innSplit[0], innSplit[1])
+
+N2=ff.nameToPuuid(inns)
+if N2 is not None:
     print(f"Now retrieving data for Player: {N2.get("gameName")}#{N2.get("tagLine")}")
 else:
-    N1=ff.puuidToName(innSplit)
+    N1=ff.puuidToName(inns)
     if N1[1] != "":
         print(f"Now retrieving data for Player: {N1[0]}#{N1[1]}")
     else:

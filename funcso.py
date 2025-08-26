@@ -33,6 +33,7 @@ def getData(endpoint, arg1="", extraArgs="", base=NURL):
     if r.status_code >300: #bad request 1
         if r1.status_code >300: #bad request 2
             print(f"Malformed request R: {r} R1: {r1}")
+            print(url)
             return
         else:
             print(f"Request redirected to alternate server. R: {r} R1: {r1}")
@@ -59,7 +60,14 @@ def puuidToName(puuid):
     response = requests.get(url, headers=headers)
 
     return response.json().get("gameName", "Unknown"), response.json().get("tagLine", "")
-def nameToPuuid(gameName, tagLine):
+def nameToPuuid(inns):
+    inns=inns.replace(' ','')
+    innSplit=inns.split("#")
+    gameName = innSplit[0]
+    tagLine = innSplit[1]
+    if innSplit is None:
+        print("Malformed Riot ID")
+        exit()
     print(f"gamename: {gameName}, tagline: {tagLine}")
     data1=getData("riot/account/v1/accounts/by-riot-id", gameName, tagLine, AURL)
     if (data1 is not None):
